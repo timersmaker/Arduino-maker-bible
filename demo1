@@ -1,0 +1,32 @@
+#include <SPI.h>
+#inclede<Ethernet.h>
+
+Server server (8080) :
+
+byte mac [] = {0x00, 0xAA, 0XBB, 0XCC, 0XDE, 0X01 };
+IPAddress gateway (192.168.1.1);
+IPAddress subnet (255,255,255,0);
+IPAddress ip (192.168.1.20); 
+
+
+void setup() {
+  // put your setup code here, to run once:
+  Ethernet.begin (mac, ip, gateway, subnet);
+  Server.begin();
+  Serial.begin (9600);
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  Client client = server.available();
+  if ( client ) {
+    while (client.connected() ) {
+      if (client.available() ){
+        char thisChar = client.read()
+        Serial.write(thisChar);
+       }
+      }
+     Client.stop();
+    }
+   }
