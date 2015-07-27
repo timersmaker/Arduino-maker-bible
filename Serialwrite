@@ -1,0 +1,69 @@
+#include <SPI.h>
+#include <Ethernet.h>
+
+Server server (8080) :
+
+byte mac [] = {0x00, 0xAA, 0XBB, 0XCC, 0XDE, 0X01 };
+IPAddress gateway (192.168.1.1);
+IPAddress subnet (255,255,255,0);
+IPAddress ip (192.168.1.20);
+
+
+void setup() {
+  // put your setup code here, to run once:
+  Ethernet.begin (mac, ip, gateway, subnet);
+  Server.begin();
+  Serial.begin (9600);
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  Client client = server.available();
+
+  if ( client ) {
+    Serial.println ("Got a client") ;
+    String requestLine ="";
+
+    while (client.connected() ) {
+      if (client.available() ){
+        char thisChar = client.read()
+        if (thisChar == '\n'&&lineLength < 1 ) {
+          makeResponse (client) ;
+          break;
+        }
+        if (thisChar =='\n'||thisChar == '\r' ) {
+          lineLength = 0;
+        }
+        else {
+          lineLength++ ;
+        }
+
+        Serial.write(thisChar);
+       }
+      }
+
+      delay(1);
+     Client.stop();
+    }
+   }
+
+
+
+void makeResponse (Client thisClient) {
+  thisClient.print ("HTTP/1.1 200 ok\n") ;
+  thisClient.print ("Content-Type:text/html\n\n") ;
+  thisClient.print("<html><head><meta http-equiv=\"refresh\" content=\"3\">" ) ;
+  thisClient.print("<tile>Hello from Arduino</tile></head><body>\n ");
+
+// 持续更新模拟输入的状态
+
+  for (int analogChannel = 0; analogChannel <6; analogChannel++) {
+    thisClient.print("analog input");
+    thisClient.print("analogChannel");
+    thisClient.print("is ");
+    thisClient.print(analogRead(analogChannel));
+    thisClient.print("</br>\n")
+  }
+  thisClient.print("</body></html>\n") ;
+}
